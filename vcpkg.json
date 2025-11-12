@@ -1,9 +1,0 @@
-{
-    "name": "penguine-c",
-    "version": "1.0.0",
-    "description": "A penguine_c project using vcpkg for dependency management",
-    "homepage": "",
-    "dependencies": [],
-    "builtin-baseline": "x-custom-baseline",
-    "overrides": []
-}

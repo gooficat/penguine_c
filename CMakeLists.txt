@@ -10,11 +10,18 @@ cmake_minimum_required(VERSION 3.15)
     
     file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.c")
 
+
+    include_directories(src)
+
     # Add executable
     add_executable(penguine_c 
         ${SRCS}
     )
     
+    target_link_libraries(penguine_c
+        opengl32
+    )
+
     # Compiler-specific options
     if(MSVC)
         target_compile_options(penguine_c PRIVATE /W4)
