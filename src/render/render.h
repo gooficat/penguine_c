@@ -8,23 +8,16 @@ typedef GLuint texture_id_t;
 typedef uint32_t mesh_id_t;
 typedef uint32_t material_id_t;
 
-typedef struct _material {
-    texture_id_t texture;
+void render_init(uint32_t width, uint32_t height);
 
-} material_s;
+mesh_id_t add_mesh(const GLfloat *verts, GLsizei num_verts, const GLuint *inds, GLsizei num_inds);
 
-typedef struct _mesh {
-    GLuint vao;
-    GLuint vbo;
-    GLuint ebo;
-    GLsizei num_indices;
-} mesh_s;
+material_id_t add_material(float diffuse, float specular);
 
-void render_init();
-
-mesh_id_t add_mesh(const char * resource_path);
-
-material_id_t add_material(const char * resource_path);
+void render_clear();
 
 void draw_mesh(mesh_id_t mesh, material_id_t material, mat4_t transform);
 
+void set_camera_projection(mat4_t matrix);
+
+void set_camera_view(mat4_t matrix);

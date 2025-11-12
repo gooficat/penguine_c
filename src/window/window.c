@@ -9,6 +9,7 @@ LRESULT CALLBACK window_procedure(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lPa
     switch (Msg) {
         case WM_CLOSE:
         case WM_DESTROY:
+        case WM_QUIT:
             PostQuitMessage(0);
     }
     return DefWindowProcA(hwnd, Msg, wParam, lParam);

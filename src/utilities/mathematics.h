@@ -18,3 +18,10 @@ typedef float mat4_t[16];
 extern mat4_t mat4_identity;
 
 #define mat4_copy(a, b) memcpy(a, b, sizeof(mat4_t))
+
+#define mat4_ortho(r, t, f) (mat4_t){\
+    1.0f/r, 0, 0, 0,\
+    0, 1.0f/t, 0, 0,\
+    0, 0, 1.0f/f, 0,\
+    0, 0, 0, 1\
+}
