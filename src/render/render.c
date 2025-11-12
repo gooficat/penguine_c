@@ -6,6 +6,7 @@
 
 
 typedef struct _material {
+    vec4_t color;
     float diffuse;
     float specular;
 } material_s;
@@ -28,6 +29,7 @@ static GLuint view_uniform_location;
 static GLuint projection_uniform_location;
 
 
+static GLuint color_uniform_location;
 static GLuint diffuse_uniform_location;
 static GLuint specular_uniform_location;
 
@@ -67,7 +69,7 @@ void render_init(uint32_t width, uint32_t height) {
     view_uniform_location = glGetUniformLocation(shader_program, "view");
     projection_uniform_location = glGetUniformLocation(shader_program, "projection");
 
-    
+    color_uniform_location = glGetUniformLocation(shader_program, "color");
     diffuse_uniform_location = glGetUniformLocation(shader_program, "diffuse");
     specular_uniform_location = glGetUniformLocation(shader_program, "specular");
 
@@ -109,13 +111,15 @@ mesh_id_t add_mesh(const GLfloat *verts, GLsizei num_verts, const GLuint *inds, 
     return mesh_id;
 }
 
-material_id_t add_material(float diffuse, float specular) {
+material_id_t add_material(vec4_t color, float diffuse, float specular) {
     material_id_t material_id = num_materials++;
     materials = realloc(materials, sizeof(material_s) * num_materials);
-    materials[material_id] = (material_s){
+    material_s material = {
         .diffuse = diffuse,
         .specular = specular
     };
+    vec4_copy(material.color, color);
+    materials[material_id] = material;
     return material_id;
 }
 
@@ -126,6 +130,7 @@ void render_clear() {
 void draw_mesh(mesh_id_t mesh, material_id_t material, mat4_t transform) {
     glUniformMatrix4fv(model_uniform_location, 1, GL_FALSE, &transform[0]);
     glBindVertexArray(meshes[mesh].vao);
+    glUniform4fv(color_uniform_location, 1, materials[material].color);
     
     glUniform1f(diffuse_uniform_location, materials[material].diffuse);
     glUniform1f(specular_uniform_location, materials[material].specular);

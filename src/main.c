@@ -27,7 +27,8 @@ int main() {
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0
     }, 3, (uint32_t[]){0, 1, 2}, 3);
-    test_material = add_material(0.5f, 1.0f);
+    
+    test_material = add_material(vec4(0.2f, 0.5f, 0.1f, 1.0f), 0.5f, 1.0f);
 
 
     while (!window_should_close(&window)) {
