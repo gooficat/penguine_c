@@ -12,7 +12,9 @@ void render_init(uint32_t width, uint32_t height);
 
 mesh_id_t add_mesh(const GLfloat *verts, GLsizei num_verts, const GLuint *inds, GLsizei num_inds);
 
-material_id_t add_material(vec4_t color, float diffuse, float specular);
+material_id_t add_material(vec4_t color, float diffuse);
+
+mesh_id_t load_mesh(const char * filepath);
 
 void render_clear();
 

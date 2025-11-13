@@ -2,9 +2,9 @@
 
 uniform vec4 color;
 uniform float diffuse;
-uniform float specular;
 
+in float dist;
 
 void main() {
-    gl_FragColor = color * diffuse * specular / specular;
+    gl_FragColor = color * diffuse - dist;
 }

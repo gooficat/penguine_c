@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
     project(penguine_c LANGUAGES C)
     
     # Set C standard
-    set(CMAKE_C_STANDARD 17)
+    set(CMAKE_C_STANDARD 11)
     set(CMAKE_C_STANDARD_REQUIRED ON)
     
     # Find vcpkg packages if available
@@ -11,7 +11,6 @@ cmake_minimum_required(VERSION 3.15)
     file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.c")
 
 
-    include_directories(src)
 
     # Add executable
     add_executable(penguine_c 
@@ -21,6 +20,9 @@ cmake_minimum_required(VERSION 3.15)
     target_link_libraries(penguine_c
         opengl32
     )
+
+    target_include_directories(penguine_c PRIVATE "${CMAKE_SOURCE_DIR}/src")
+
 
     # Compiler-specific options
     if(MSVC)
