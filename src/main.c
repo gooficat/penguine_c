@@ -19,7 +19,7 @@ int main() {
 
     set_camera_view(mat4_identity);
 
-    mesh_id_t test_mesh = load_mesh("../res/cube.obj");
+    mesh_id_t test_mesh = load_mesh("../../../../res/cube.obj");
     material_id_t test_material = add_material(vec4(0.2f, 0.5f, 0.1f, 1.0f), 0.5f);
 
     float inc = 0.0f;

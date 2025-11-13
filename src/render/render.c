@@ -46,13 +46,13 @@ void render_init(uint32_t width, uint32_t height) {
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
     
-    char * v_src = file_to_string("../res/shader.vert", "r");
+    char * v_src = file_to_string("../../../../res/shader.vert", "r");
     glShaderSource(vertex_shader, 1, &v_src, (void*)0);
     free(v_src);
     glCompileShader(vertex_shader);
 
     
-    char * f_src = file_to_string("../res/shader.frag", "r");
+    char * f_src = file_to_string("../../../../res/shader.frag", "r");
     glShaderSource(fragment_shader, 1, &f_src, (void*)0);
     free(f_src);
     glCompileShader(fragment_shader);

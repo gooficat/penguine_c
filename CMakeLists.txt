@@ -4,22 +4,34 @@ cmake_minimum_required(VERSION 3.15)
     # Set C standard
     set(CMAKE_C_STANDARD 11)
     set(CMAKE_C_STANDARD_REQUIRED ON)
+
+    if(EMSCRIPTEN)
+        set(CMAKE_C_COMPILER "emcc")
+    endif()
     
     # Find vcpkg packages if available
     find_package(PkgConfig QUIET)
     
     file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.c")
-
-
-
     # Add executable
     add_executable(penguine_c 
         ${SRCS}
     )
-    
-    target_link_libraries(penguine_c
-        opengl32
-    )
+
+    if(EMSCRIPTEN)
+        target_link_options(penguine_c PRIVATE
+            -sWASM=1
+            -sUSE_WEBGL2=1
+            -sALLOW_MEMORY_GROWTH=1
+            -sEXPORTED_RUNTIME_METHODS=ccall,cwrap
+        )
+        set_target_properties(penguine_c PROPERTIES SUFFIX ".js")
+    else()
+        target_link_libraries(penguine_c
+            opengl32
+        )
+    endif()
+
 
     target_include_directories(penguine_c PRIVATE "${CMAKE_SOURCE_DIR}/src")
 
