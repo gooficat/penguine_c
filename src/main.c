@@ -1,13 +1,10 @@
 #include <stdio.h>
 
-#include "utilities/mathematics.h"
-#include "window/window.h"
-
-#include "render/render.h"
+#include "penguine.h"
 
 window_s window;
 
-int main() {
+int main(void) {
     window = create_window(640, 360, "penguine");
     window_make_context_current(&window);
     printf("Hello, World!\n");
