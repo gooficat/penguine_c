@@ -103,12 +103,15 @@ mesh_id_t add_mesh(const GLfloat *verts, GLsizei num_verts, const GLuint *inds, 
     glBindVertexArray(mesh.vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, num_verts * 3 * sizeof(GLfloat), &verts[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num_verts * 5 * sizeof(GLfloat), &verts[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_inds * sizeof(GLuint), &inds[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (void*)(sizeof(GLfloat) * 3));
 
     mesh.num_indices = num_inds;
 
@@ -133,12 +136,18 @@ material_id_t add_material(vec4_t color, float diffuse, texture_id_t texture) {
 mesh_id_t load_mesh(const char * filepath) {
     FILE *f;
     fopen_s(&f, filepath, "rt");
-    if (filepath[strlen(filepath)-3] == 'o') { // obj
+    if (!strcmp(filepath + strlen(filepath) - 4, ".obj")) {
 
         #define max_len 256 // a line cannot exceed this or it will be cut. for plain obj this is safe except in extreme circumstances
         char buffer[max_len]; // buffer holds line content
         GLfloat *positions = malloc(sizeof(GLfloat) * 3);
+        GLfloat *tex_coords = malloc(sizeof(GLfloat) * 3);
         GLsizei num_positions = 0;
+        GLsizei num_texcooords = 0;
+
+        GLfloat *vertices = malloc(sizeof(GLfloat) * 5);
+        GLsizei num_vertices = 0;
+
         GLuint *indices = malloc(sizeof(GLuint) * 3);
         GLsizei num_indices = 0;
 
@@ -149,23 +158,45 @@ mesh_id_t load_mesh(const char * filepath) {
                     num_positions += 3;
                     sscanf_s(buffer, "v %f %f %f", &n[0], &n[1], &n[2]);
             }
+            if (buffer[0] == 'v' && buffer[1] == 't') {
+                    tex_coords = realloc(tex_coords, sizeof(GLfloat) * (num_texcooords+2));
+                    GLfloat *n = &tex_coords[num_texcooords];
+                    num_texcooords += 2;
+                    sscanf_s(buffer, "vt %f %f", &n[0], &n[1]);
+            }
             else if (buffer[0] == 'f') { // if a face
+                    GLuint p[3];
+                    GLuint t[3];
+                    sscanf_s(buffer, "f %d/%d/%*d %d/%d/%*d %d/%d/%*d", &p[0], &t[0], &p[1], &t[1], &p[2], &t[2]);
+
+                    vertices = realloc(vertices, sizeof(GLfloat) * (num_vertices+15));
+                    GLfloat *v = &vertices[num_vertices];
+                    num_vertices += 15;
+                    for (int i = 0; i != 3; ++i) {
+                        v[i * 5] = positions[--p[i] * 3];
+                        v[i * 5 + 1] = positions[p[i] * 3 + 1];
+                        v[i * 5 + 2] = positions[p[i] * 3 + 2];
+                        v[i * 5 + 3] = tex_coords[--t[i] * 2];
+                        v[i * 5 + 4] = tex_coords[t[i] * 2 + 1];
+                    }
+
                     indices = realloc(indices, sizeof(GLuint) * (num_indices+3));
-                    GLuint *i = &indices[num_indices];
-                    num_indices += 3;
-                    sscanf_s(buffer, "f %d/%*d/%*d %d/%*d/%*d %d/%*d/%*d", &i[0], &i[1], &i[2]);
-                    --i[0];
-                    --i[1];
-                    --i[2];
+                    GLuint *n = &indices[num_indices];
+                    n[0] = num_indices++;
+                    n[1] = num_indices++;
+                    n[2] = num_indices++;
             }
         }
 
         fclose(f);
 
-        mesh_id_t m = add_mesh(positions, num_positions, indices, num_indices);
+        mesh_id_t m = add_mesh(vertices, num_vertices, indices, num_indices);
 
         free(positions);
+        free(tex_coords);
         free(indices);
+        free(vertices);
+
         
         return m;
     }
