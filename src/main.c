@@ -20,6 +20,8 @@ int main(void) {
     mesh_id_t test_mesh = load_mesh("../../../../res/cube.obj");
     material_id_t test_material = add_material(vec4(0.2f, 0.5f, 0.1f, 1.0f), 0.5f, test_texture);
 
+    
+
     float inc = 0.0f;
 
     while (!window_should_close(&window)) {

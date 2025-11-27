@@ -4,3 +4,4 @@
 #include "utilities/mathematics.h"
 #include "utilities/file.h"
 #include "window/window.h"
+#include "physics/collision.h"
