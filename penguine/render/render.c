@@ -5,6 +5,7 @@
 #include "render.h"
 #include "utilities/file.h"
 #include "utilities/mathematics.h"
+#include "utilities/memory.h"
 
 typedef GLuint texture_t;
 
@@ -92,7 +93,7 @@ void render_init(uint32_t width, uint32_t height) {
 
 mesh_id_t add_mesh(const GLfloat *verts, GLsizei num_verts, const GLuint *inds, GLsizei num_inds) {
     mesh_id_t mesh_id = num_meshes++;
-    meshes = realloc(meshes, sizeof(mesh_s) * num_meshes);
+    safe_realloc(meshes, sizeof(mesh_s) * num_meshes);
 
     mesh_s mesh = {0};
     
@@ -122,7 +123,7 @@ mesh_id_t add_mesh(const GLfloat *verts, GLsizei num_verts, const GLuint *inds, 
 
 material_id_t add_material(vec4_t color, float diffuse, texture_id_t texture) {
     material_id_t material_id = num_materials++;
-    materials = realloc(materials, sizeof(material_s) * num_materials);
+    safe_realloc(materials, sizeof(material_s) * num_materials);
     material_s material = {
         .diffuse = diffuse,
         .diffuse_texture = texture
@@ -153,13 +154,13 @@ mesh_id_t load_mesh(const char * filepath) {
 
         while (fgets(buffer, max_len, f)) {
             if (buffer[0] == 'v' && buffer[1] == ' ') {
-                    positions = realloc(positions, sizeof(GLfloat) * (num_positions+3));
+                    safe_realloc(positions, sizeof(GLfloat) * (num_positions+3));
                     GLfloat *n = &positions[num_positions];
                     num_positions += 3;
                     sscanf_s(buffer, "v %f %f %f", &n[0], &n[1], &n[2]);
             }
             if (buffer[0] == 'v' && buffer[1] == 't') {
-                    tex_coords = realloc(tex_coords, sizeof(GLfloat) * (num_texcooords+2));
+                    safe_realloc(tex_coords, sizeof(GLfloat) * (num_texcooords+2));
                     GLfloat *n = &tex_coords[num_texcooords];
                     num_texcooords += 2;
                     sscanf_s(buffer, "vt %f %f", &n[0], &n[1]);
@@ -169,7 +170,7 @@ mesh_id_t load_mesh(const char * filepath) {
                     GLuint t[3];
                     sscanf_s(buffer, "f %d/%d/%*d %d/%d/%*d %d/%d/%*d", &p[0], &t[0], &p[1], &t[1], &p[2], &t[2]);
 
-                    vertices = realloc(vertices, sizeof(GLfloat) * (num_vertices+15));
+                    safe_realloc(vertices, sizeof(GLfloat) * (num_vertices+15));
                     GLfloat *v = &vertices[num_vertices];
                     num_vertices += 15;
                     for (int i = 0; i != 3; ++i) {
@@ -180,7 +181,7 @@ mesh_id_t load_mesh(const char * filepath) {
                         v[i * 5 + 4] = tex_coords[t[i] * 2 + 1];
                     }
 
-                    indices = realloc(indices, sizeof(GLuint) * (num_indices+3));
+                    safe_realloc(indices, sizeof(GLuint) * (num_indices+3));
                     GLuint *n = &indices[num_indices];
                     n[0] = num_indices++;
                     n[1] = num_indices++;
@@ -251,7 +252,7 @@ texture_id_t load_texture(const char *filepath) {
 
     texture_t texture;
 
-    textures = realloc(textures, sizeof(texture_id) * num_textures);
+    safe_realloc(textures, sizeof(texture_id) * num_textures);
 
     glGenTextures(1, &texture);
 
