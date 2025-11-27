@@ -6,10 +6,12 @@
 #include "utilities/file.h"
 #include "utilities/mathematics.h"
 
+typedef GLuint texture_t;
 
 typedef struct _material {
     vec4_t color;
     float diffuse;
+    texture_t diffuse_texture;
 } material_s;
 
 typedef struct _mesh {
@@ -19,10 +21,15 @@ typedef struct _mesh {
     GLsizei num_indices;
 } mesh_s;
 
+
 static mesh_s *meshes;
 static mesh_id_t num_meshes;
+
 static material_s *materials;
 static material_id_t num_materials;
+
+static texture_t *textures;
+static texture_id_t num_textures;
 
 static GLuint shader_program;
 static GLuint model_uniform_location;
@@ -110,11 +117,12 @@ mesh_id_t add_mesh(const GLfloat *verts, GLsizei num_verts, const GLuint *inds, 
     return mesh_id;
 }
 
-material_id_t add_material(vec4_t color, float diffuse) {
+material_id_t add_material(vec4_t color, float diffuse, texture_id_t texture) {
     material_id_t material_id = num_materials++;
     materials = realloc(materials, sizeof(material_s) * num_materials);
     material_s material = {
         .diffuse = diffuse,
+        .diffuse_texture = texture
     };
     vec4_copy(material.color, color);
     materials[material_id] = material;
@@ -170,6 +178,67 @@ material_id_t load_material(const char * filepath) {
 
 }
 
+texture_id_t load_texture(const char *filepath) {
+    uint8_t header[54];
+    uint32_t data_pos;
+    uint32_t width, height;
+    uint32_t size;
+
+    uint8_t *data;
+
+    FILE *f = NULL;
+    fopen_s(&f, filepath, "rb");
+
+    if (!f) {
+        printf_s("Error opening texture from path %s", filepath);
+        exit(EXIT_FAILURE);
+    }
+
+    fread_s(header, sizeof(header), sizeof(uint8_t), 54, f);
+    
+    data_pos = *(int32_t *) &(header[0x0A]);
+    size = *(int32_t *) &(header[0x22]);
+    width = *(int32_t *) &(header[0x12]);
+    height = *(int32_t *) &(header[0x16]);
+
+    if (!size) {
+        size = width * height * 3;
+    }
+    if (!data_pos) {
+        data_pos = 54;
+    }
+
+    data = (uint8_t*)malloc(sizeof(uint8_t) * size);
+
+    fread_s(data, size * sizeof(uint8_t), sizeof(uint8_t), size, f);
+
+    if (f) {
+        fclose(f);
+    }
+
+    texture_id_t texture_id = num_textures++;
+
+    texture_t texture;
+
+    textures = realloc(textures, sizeof(texture_id) * num_textures);
+
+    glGenTextures(1, &texture);
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    textures[texture_id] = texture;
+
+    free(data);
+
+    return texture_id;
+}
+
 void render_clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -177,6 +246,8 @@ void render_clear() {
 void draw_mesh(mesh_id_t mesh, material_id_t material, mat4_t transform) {
     glUniformMatrix4fv(model_uniform_location, 1, GL_FALSE, &transform[0]);
     
+    glBindTexture(GL_TEXTURE_2D, textures[materials[material].diffuse_texture]);
+
     glBindVertexArray(meshes[mesh].vao);
 
     glUniform4fv(color_uniform_location, 1, materials[material].color);

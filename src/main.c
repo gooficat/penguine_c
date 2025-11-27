@@ -16,8 +16,9 @@ int main(void) {
 
     set_camera_view(mat4_identity);
 
+    texture_id_t test_texture = load_texture("../../../../res/tiles.bmp");
     mesh_id_t test_mesh = load_mesh("../../../../res/cube.obj");
-    material_id_t test_material = add_material(vec4(0.2f, 0.5f, 0.1f, 1.0f), 0.5f);
+    material_id_t test_material = add_material(vec4(0.2f, 0.5f, 0.1f, 1.0f), 0.5f, test_texture);
 
     float inc = 0.0f;
 
