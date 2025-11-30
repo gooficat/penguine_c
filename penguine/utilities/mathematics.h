@@ -1,7 +1,5 @@
 #pragma once
 
-#include "utilities/mathematics.h"
-
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>

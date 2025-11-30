@@ -207,7 +207,7 @@ mesh_id_t load_mesh(const char * filepath) {
 }
 
 material_id_t load_material(const char * filepath) {
-
+    return num_materials++;
 }
 
 texture_id_t load_texture(const char *filepath) {
