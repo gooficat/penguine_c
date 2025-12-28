@@ -1,6 +1,7 @@
 #pragma once
-#include "render/gl.h"
 #include <stdint.h>
+#include "render/gl.h"
+
 
 #include "utilities/mathematics.h"
 
@@ -10,13 +11,13 @@ typedef uint32_t material_id_t;
 
 void render_init(uint32_t width, uint32_t height);
 
-mesh_id_t add_mesh(const GLfloat *verts, GLsizei num_verts, const GLuint *inds, GLsizei num_inds);
+mesh_id_t add_mesh(const GLfloat* verts, GLsizei num_verts, const GLuint* inds, GLsizei num_inds);
 
-texture_id_t load_texture(const char *filepath);
+texture_id_t load_texture(const char* filepath);
 
 material_id_t add_material(vec4_t color, float diffuse, texture_id_t texture);
 
-mesh_id_t load_mesh(const char * filepath);
+mesh_id_t load_mesh(const char* filepath);
 
 void render_clear();
 

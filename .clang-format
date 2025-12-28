@@ -1,8 +1,8 @@
 ---
 Language: Cpp
 BasedOnStyle: LLVM
-IndentWidth: 3
-TabWidth: 3
+IndentWidth: 4
+TabWidth: 4
 UseTab: Never
 ColumnLimit: 100
 BreakBeforeBraces: Allman

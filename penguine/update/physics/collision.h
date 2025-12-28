@@ -5,9 +5,9 @@
 
 #include "utilities/mathematics.h"
 
-
-#define vec3_dist(a, b)\
-    sqrtf(powf(a[0], 2) + powf(a[1], 2) + powf(a[2], 2)) - sqrtf(powf(b[0], 2) + powf(b[1], 2) + powf(b[2], 2))
+#define vec3_dist(a, b)                                                                            \
+    sqrtf(powf(a[0], 2) + powf(a[1], 2) + powf(a[2], 2)) -                                         \
+        sqrtf(powf(b[0], 2) + powf(b[1], 2) + powf(b[2], 2))
 
 bool vec3_vec3(vec3_t a, vec3_t b);
 
